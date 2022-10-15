@@ -14,30 +14,44 @@ export namespace lan{
             //将所有字符串重新连接在一起
             .join("")
     }
-    export enum ValueType{
+    export enum BasicValueType{
         String,
         Int,
         Float,
+        Array,
+        Obj,
+    }
+    export class ValueType{
+        constructor(public basic:BasicValueType) {
+        }
     }
     export function ValueTypeTsName(t:ValueType){
-        switch (t){
-            case lan.ValueType.Float:
+        switch (t.basic){
+            case lan.BasicValueType.Float:
                 return "number"
-            case lan.ValueType.Int:
+            case lan.BasicValueType.Int:
                 return "number"
-            case lan.ValueType.String:
+            case lan.BasicValueType.String:
                 return "string"
+            case lan.BasicValueType.Obj:
+                return "any"
+            case lan.BasicValueType.Array:
+                return "any[]"
         }
         return ""
     }
     export function ValueTypeRsName(t:ValueType){
-        switch (t){
-            case lan.ValueType.Float:
+        switch (t.basic){
+            case lan.BasicValueType.Float:
                 return "f32"
-            case lan.ValueType.Int:
+            case lan.BasicValueType.Int:
                 return "i32"
-            case lan.ValueType.String:
+            case lan.BasicValueType.String:
                 return "String"
+            case lan.BasicValueType.Obj:
+                return "serde_json::Map<String,serde_json::Value>"
+            case lan.BasicValueType.Array:
+                return "Vec<serde_json::Value>"
         }
         return ""
     }
@@ -108,7 +122,7 @@ export namespace lan{
         to_ts_string(): string {
             return this.fname+"("+
                 this.args.map((arg,i)=>{
-                    return (i==0?"":",")+arg.to_ts_string()
+                    return (i==0?"":"")+arg.to_ts_string()
                 })
                 +"):void"+(this.body?this.body:"");
         }
