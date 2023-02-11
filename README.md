@@ -1,5 +1,8 @@
+# k8s_deploy_with_zerotier
+
+通过zerotier网络部署k8s的模版
 # ts
-##lan_maker
+## lan_maker
 很多时候的代码都是可以生成的，比如语言间消息传递，消息的解析转发代码就可以通过一个对消息的描述生成出来，
 
 消息具体类型 消息到具体类的分发
