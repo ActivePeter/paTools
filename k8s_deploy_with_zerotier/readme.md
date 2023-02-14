@@ -20,8 +20,13 @@ python ./deploy_container.py
 cd ..
 
 kubeadm init --config ./kubeadm-config.yaml 
+```
+---
+network plugin returns error: cni plugin not initialized
 
+```
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 ```
+---
+loadFlannelSubnetEnv failed: open /run/flannel/subnet.env: no such file or directory"
 
-etwork plugin returns error: cni plugin not initialized
