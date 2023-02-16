@@ -1,0 +1,2 @@
+export DATENLORD_METRICS_TEST=scripts/datenlord-metrics-test.yaml
+sh scripts/datenlord_metrics_logging_test.sh
