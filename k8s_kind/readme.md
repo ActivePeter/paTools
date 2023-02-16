@@ -24,4 +24,5 @@ cat >> ./kind-config.yaml <<END
           END
 (root)
 kind create cluster --config ./kind-config.yaml
+kind create cluster --config ../k8s_kind/kind-config.yaml --image=ubuntu:20.04
 ```
