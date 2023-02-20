@@ -7,7 +7,7 @@ kubectl apply -f ./snapshot.storage.k8s.io_volumesnapshotclasses.yaml
 kubectl apply -f scripts/datenlord.yaml
 echo start1
 # 等待启动完成
-kubectl wait --for=condition=Ready pod -l app=csi-controller-datenlord -n csi-datenlord --timeout=60s
+kubectl wait --for=condition=Ready pod -l app=csi-controller-datenlord -n csi-datenlord --timeout=140s
 kubectl wait --for=condition=Ready pod -l app=csi-nodeplugin-datenlord -n csi-datenlord --timeout=60s
 FOUND_PATH=`cat /proc/self/mountinfo | grep fuse | grep /var/opt/datenlord-data | awk '{print $5}'`
 test -n $FOUND_PATH || (echo "FAILED TO FIND MOUNT PATH /var/opt/datenlord-data" && /bin/false)
@@ -24,7 +24,7 @@ kubectl get csinode
 kubectl get storageclass
 kubectl get volumesnapshotclass
 echo wait2
-kubectl wait --for=condition=Ready pod -l app=csi-controller-datenlord -n csi-datenlord --timeout=60s
+kubectl wait --for=condition=Ready pod -l app=csi-controller-datenlord -n csi-datenlord --timeout=140s
 kubectl wait --for=condition=Ready pod -l app=csi-nodeplugin-datenlord -n csi-datenlord --timeout=60s
 
 # snapshot controller
