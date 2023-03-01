@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		}
+	],
+	"settings": {},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "redeploy kind",
+				"type": "shell",
+				"command": "python3 paTools/datenlord_local/localtest/redeploy.py"
+			},
+			{
+				"label": "e2e test",
+				"type": "shell",
+				"command": "sh paTools/datenlord_local/5_e2e.sh > e2e_test_log"
+			}
+		]
+	}
+}
