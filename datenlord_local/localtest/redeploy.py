@@ -14,7 +14,7 @@ runcmd("kind delete cluster")
 runcmd("kind create cluster --config ./paTools/k8s_kind/kind-config.yaml")
 runcmd("docker build . "+
             "--build-arg RUST_IMAGE_VERSION=1.61.0 "+
-            "--file ./scripts/localtest/Dockerfile "+
+            "--file ./paTools/datenlord_local/localtest/Dockerfile "+
             "--target datenlord "+
             "--tag datenlord/datenlord:e2e_test" )
 runcmd("kind load docker-image datenlord/datenlord:e2e_test")
