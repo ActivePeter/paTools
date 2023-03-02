@@ -10,8 +10,8 @@ def runcmd(cmd,exit_when_fail=True):
             exit()
 
 
-runcmd("kind delete cluster")
-runcmd("kind create cluster --config ./paTools/k8s_kind/kind-config.yaml")
+# runcmd("kind delete cluster")
+# runcmd("kind create cluster --config ./paTools/k8s_kind/kind-config.yaml")
 runcmd("docker build . "+
             "--build-arg RUST_IMAGE_VERSION=1.61.0 "+
             "--file ./paTools/datenlord_local/localtest/Dockerfile "+
