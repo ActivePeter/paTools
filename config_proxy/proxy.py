@@ -3,7 +3,8 @@
 
 import os
 
-hostip="192.168.31.185"
+hostip="127.0.0.1"
+port=7890
 
 import subprocess
 def runcmd(cmd):
@@ -15,30 +16,30 @@ def runcmd(cmd):
 
 def setproxy():
     # git
-    runcmd("git config --global http.proxy http://{}:23333".format(hostip))
-    runcmd("git config --global https.proxy https://{}:23333".format(hostip))
+    runcmd("git config --global http.proxy http://{}:{}".format(hostip,port))
+    runcmd("git config --global https.proxy https://{}:{}".format(hostip,port))
     
-    # docker
-    def rewrite_docker_service():
-        file_object = open("docker.service",'r') #创建一个文件对象，也是一个可迭代对象
-        to=""
-        try:
-            all_the_text = file_object.read()  #结果为str类型
-            to=all_the_text.replace("{target}",
-                ('Environment="HTTP_PROXY=http://{}:23333"\n'+
-                'Environment="HTTPS_PROXY=http://{}:23333"\n')
-                .format(hostip,hostip))
-            # print (type(all_the_text))
+    # # docker
+    # def rewrite_docker_service():
+    #     file_object = open("docker.service",'r') #创建一个文件对象，也是一个可迭代对象
+    #     to=""
+    #     try:
+    #         all_the_text = file_object.read()  #结果为str类型
+    #         to=all_the_text.replace("{target}",
+    #             ('Environment="HTTP_PROXY=http://{}:23333"\n'+
+    #             'Environment="HTTPS_PROXY=http://{}:23333"\n')
+    #             .format(hostip,hostip))
+    #         # print (type(all_the_text))
             
 
-        finally:
-            file_object.close()
+    #     finally:
+    #         file_object.close()
 
-        # print ("to=",to)
-        with open("/usr/lib/systemd/system/docker.service",'w')as file:
-            file.write(to)
-        runcmd("systemctl daemon-reload")
-        runcmd("systemctl restart docker.service")
-    rewrite_docker_service()
+    #     # print ("to=",to)
+    #     with open("/usr/lib/systemd/system/docker.service",'w')as file:
+    #         file.write(to)
+    #     runcmd("systemctl daemon-reload")
+    #     runcmd("systemctl restart docker.service")
+    # rewrite_docker_service()
 
 setproxy();
