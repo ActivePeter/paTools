@@ -10,4 +10,5 @@ os.chdir(CUR_FDIR)
 
 
 # docker compose up
-os.system('docker build -t dev .')
+os.system('docker-compose down')
+os.system('docker-compose up')
