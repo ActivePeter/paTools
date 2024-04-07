@@ -1,0 +1,106 @@
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: labcon2
+# ---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: lab3con-daemon
+  namespace: labcon2
+spec:
+  selector:
+    matchLabels:
+      app: lab3con
+  template:
+    metadata:
+      labels:
+        app: lab3con
+      annotations:
+        backup.velero.io/backup-volumes: lab3con-pvc
+    spec:
+      hostNetwork: true  # 启用 HostNetwork 模式
+      nodeSelector:
+        kubernetes.io/hostname: lab3
+      containers:
+      - name: lab3con
+        image: ubuntu
+        command: ["/bin/bash"]
+        args: 
+          - "-c"
+          - |
+            apt-get update && \
+            apt-get install -y \
+              ssh \
+              net-tools \
+              vim \
+              sudo \
+              git && \
+            sed -ri 's/^#PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+            sed -i 's/^#Port 22/Port 2222/' /etc/ssh/sshd_config && \
+            echo 'root:74123' | chpasswd && \
+            service ssh start && \
+            sleep infinity
+        securityContext:
+          privileged: true
+        env:
+        - name: SHELL
+          value: "/bin/bash"
+        volumeMounts:
+        - name: lab3con-pvc
+          mountPath: /pvcdata  # 将 PVC 挂载到容器内的 /pvcdata 目录下
+      volumes:
+      - name: lab3con-pvc  # 此处的名称应该和 VolumeMounts 中引用的名称一致
+        persistentVolumeClaim:
+          claimName: lab3con-pvc
+
+---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: dev-lab3-pvc
+#   # namespace: labcon2
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 200Gi
+#   storageClassName: lab3-storage-class
+#   volumeName: lab3-dev-pv
+
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: lab3-dev-pv
+# spec:
+#   capacity:
+#     storage: 200Gi
+#   volumeMode: Filesystem  # 设置卷类型为 Filesystem
+#   accessModes:
+#     - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Retain
+#   storageClassName: lab3-storage-class
+#   nodeAffinity:
+#     required:
+#       nodeSelectorTerms:
+#       - matchExpressions:
+#         - key: kubernetes.io/hostname
+#           operator: In
+#           values:
+#           - lab3
+
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: lab3con-pvc
+  namespace: labcon2
+spec:
+  storageClassName: openebs-hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200G
