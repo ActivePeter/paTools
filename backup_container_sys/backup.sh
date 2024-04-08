@@ -10,6 +10,7 @@ exclude_dirs=(
     "/dev"
     "/mnt"
     "/tmp"
+    "/pvcdata"
 )
 
 # 构建排除参数
