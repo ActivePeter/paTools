@@ -16,6 +16,7 @@ PORT=data['port']
 
 
 # docker compose up
-os.system('git config --global http.proxy http://'+HOST+':'+PORT)
-os.system('git config --global https.proxy http://'+HOST+':'+PORT)
+os.system(f'git config --global http.proxy http://{HOST}:{PORT}')
+os.system(f'git config --global https.proxy http://{HOST}:{PORT}')
+
 # os.system('ex')
