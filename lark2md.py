@@ -8,7 +8,7 @@ def install_library(library_name):
         print(f"{library_name} 安装成功")
     except subprocess.CalledProcessError:
         print(f"无法安装 {library_name}，请手动安装")
-libraries_to_install = ["requests","lark-oapi","python-docx","Pillow"]  # 替换为你需要安装的库列表
+libraries_to_install = ["requests","lark-oapi","python-docx","Pillow",'simplify_docx']  # 替换为你需要安装的库列表
 for library in libraries_to_install:
     install_library(library)
 
