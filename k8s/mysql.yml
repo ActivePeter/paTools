@@ -1,33 +1,23 @@
-# mysql-deployment.yaml
-
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: mysql-lab3
-  labels:
-    app: mysql-lab3
+  name: mysql-deployment
 spec:
-  hostNetwork: true  # 启用 HostNetwork 模式
-  nodeSelector:
-    kubernetes.io/hostname: lab3
-  containers:
-  - name: mysql-lab3-con
-    image: mysql:latest
-    env:
-      - name: MYSQL_ROOT_PASSWORD
-        value: mysqltest
-# ---
-# # mysql-service.yaml
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: mysql-lab3
-# spec:
-#   type: NodePort
-#   selector:
-#     app: mysql-lab3 # to pod label
-#   ports:
-#   - name: mysql
-#     port: 3306
-#     nodePort: 31766
-#     targetPort: 3306
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-lab3
+  template:
+    metadata:
+      labels:
+        app: mysql-lab3
+    spec:
+      hostNetwork: true  # 启用 HostNetwork 模式
+      nodeSelector:
+        kubernetes.io/hostname: lab3
+      containers:
+      - name: mysql-lab3-con
+        image: mysql:latest
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: mysqltest
