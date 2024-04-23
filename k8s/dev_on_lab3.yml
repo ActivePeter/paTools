@@ -1,13 +1,28 @@
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: labcon2
-# ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: devcon
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: lab3con-pvc
+  namespace: devcon
+spec:
+  storageClassName: openebs-hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200G
+
+---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: lab3con-daemon
-  namespace: labcon2
+  namespace: devcon
 spec:
   selector:
     matchLabels:
@@ -49,58 +64,13 @@ spec:
         volumeMounts:
         - name: lab3con-pvc
           mountPath: /pvcdata  # 将 PVC 挂载到容器内的 /pvcdata 目录下
+        - name: lab3hostdir
+          mountPath: /lab3hostdir
       volumes:
       - name: lab3con-pvc  # 此处的名称应该和 VolumeMounts 中引用的名称一致
         persistentVolumeClaim:
           claimName: lab3con-pvc
+      - name: lab3hostdir
+        hostPath:
+          path: /lab3hostdir
 
----
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: dev-lab3-pvc
-#   # namespace: labcon2
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 200Gi
-#   storageClassName: lab3-storage-class
-#   volumeName: lab3-dev-pv
-
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: lab3-dev-pv
-# spec:
-#   capacity:
-#     storage: 200Gi
-#   volumeMode: Filesystem  # 设置卷类型为 Filesystem
-#   accessModes:
-#     - ReadWriteOnce
-#   persistentVolumeReclaimPolicy: Retain
-#   storageClassName: lab3-storage-class
-#   nodeAffinity:
-#     required:
-#       nodeSelectorTerms:
-#       - matchExpressions:
-#         - key: kubernetes.io/hostname
-#           operator: In
-#           values:
-#           - lab3
-
-
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: lab3con-pvc
-  namespace: labcon2
-spec:
-  storageClassName: openebs-hostpath
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 200G

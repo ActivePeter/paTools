@@ -1,30 +1,39 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: frpc-lab3
+  name: frpc-deployment
 spec:
-  hostNetwork: true
-  nodeSelector:
-    kubernetes.io/hostname: lab3
-  
-  containers:
-  - name: frpc-lab3-con
-    image: snowdreamtech/frpc
-    volumeMounts:
-    - name: frpc-config-lab3-con
-      mountPath: /etc/frp/frpc.toml
-      readOnly: true
-  - name: frpc-lab3-raw
-    image: snowdreamtech/frpc
-    volumeMounts:
-    - name: frpc-config-lab3-raw
-      mountPath: /etc/frp/frpc.toml
-      readOnly: true
-
-  volumes:
-  - name: frpc-config-lab3-con
-    hostPath:
-      path: /root/pa/paTools/k8s/frpc/config_lab3_con.ini
-  - name: frpc-config-lab3-raw
-    hostPath:
-      path: /root/pa/paTools/k8s/frpc/config_lab3_raw.ini
+  selector:
+    matchLabels:
+      app: frpc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frpc
+    spec:
+      nodeSelector:  # 指定节点
+        kubernetes.io/hostname: lab3
+      hostNetwork: true
+      containers:
+      - name: frpc-lab3-con
+        image: snowdreamtech/frpc
+        volumeMounts:
+        - name: frpc-config-lab3-con
+          mountPath: /etc/frp/frpc.toml
+          subPath: lab3-con
+          readOnly: true
+      - name: frpc-lab3-raw
+        image: snowdreamtech/frpc
+        volumeMounts:
+        - name: frpc-config-lab3-raw
+          mountPath: /etc/frp/frpc.toml
+          subPath: lab3-raw
+          readOnly: true
+      volumes:
+      - name: frpc-config-lab3-con
+        configMap:
+          name: frpc-conf
+      - name: frpc-config-lab3-raw
+        configMap:
+          name: frpc-conf
