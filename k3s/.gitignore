@@ -6,3 +6,4 @@ k3s
 k3s-airgap-images-amd64.tar.gz
 install.sh
 install_worker.py
+k3s.yaml
