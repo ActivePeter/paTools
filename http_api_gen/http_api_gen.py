@@ -9,10 +9,13 @@ os.chdir(CUR_FDIR)
 ### read conf
 import yaml
 with open('http_conf.yaml') as f:
-    yamldata = yaml.load(f, Loader=yaml.FullLoader)
+    # yamldata = yaml.load(f, Loader=yaml.FullLoader)
+    yamldata=yaml.safe_load(f)
 BACKEND=yamldata["backend"]
 FRONTEND=yamldata["frontend"]
 STRUCTS=yamldata["structs"]
+if STRUCTS==None:
+    STRUCTS={}
 API_LIST=yamldata["api_list"]
 
 
