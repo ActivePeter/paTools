@@ -6,3 +6,4 @@ services:
     restart: always
     volumes:
       - ./frpc.ini:/etc/frp/frpc.ini
+    network_mode: host
