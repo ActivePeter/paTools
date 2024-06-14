@@ -231,11 +231,19 @@ export namespace apis {{
 
 
 def gen_back_rs():
+    async_use="use async_trait::async_trait;"
+    async_derive="[async_trait]"
+    async_field="async"
+    if "specs" in BACKEND and "no_async" in BACKEND["specs"]:
+        async_field=""
+        async_use=""
+        async_derive=""
+
+
     apis=f"""
 use serde_json::{{json,Value}};
 use serde::{{Serialize, Deserialize}};
-use axum::{{http::StatusCode, routing::post, Json, Router}};
-use async_trait::async_trait;
+{async_use}
 {BACKEND["header"]}
 """
     structs=[]
@@ -262,11 +270,11 @@ use async_trait::async_trait;
         resp_content=gen_dispatch_rs(resptype,api["resp_dispatch"])
 
         handle_traits.append(f"""
-    async fn handle_{api_name}(&self, {trait_arg})->{resptype};
+    {async_field} fn handle_{api_name}(&self, {trait_arg})->{resptype};
             """)
 
         api_registers.append(f"""
-    async fn {api_name}({fn_req_arg})-> (StatusCode, Json<Value>){{
+    {async_field} fn {api_name}({fn_req_arg})-> (StatusCode, Json<Value>){{
         (StatusCode::OK, Json(ApiHandlerImpl.handle_{api_name}({fn_req_arg2}).await.serialize()))
     }}
     router=router
@@ -280,20 +288,23 @@ use async_trait::async_trait;
 """
 
     apis+=f"""
-#[async_trait]
+{async_derive}
 pub trait ApiHandler {{
     {"".join(handle_traits)}
 }}
 
 
-pub fn add_routers(mut router:Router)->Router
-{{
-    {"".join(api_registers)}
-    
-    router
-}}
+
 
 """
+
+# pub fn add_routers(mut router:Router)->Router
+# {{
+#     {"".join(api_registers)}
+    
+#     router
+# }}
+
     # os.makedirs(BACKEND["dir"], exist_ok=True)
     with open(f'{BACKEND["dir"]}', 'w') as f:
         f.write(apis)
