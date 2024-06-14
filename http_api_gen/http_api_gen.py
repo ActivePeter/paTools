@@ -102,7 +102,13 @@ def gen_struct_body_rs(desc, with_pub):
 }}"""
 
 def gen_struct_rs(struct_name,desc):
-    return f"""
+    if desc==None:
+        return f"""
+#[derive(Debug, Serialize, Deserialize)]
+pub struct {struct_name} {{}}
+"""
+    else:
+        return f"""
 #[derive(Debug, Serialize, Deserialize)]
 pub struct {struct_name} {gen_struct_body_rs(desc,True)}
 """
@@ -200,13 +206,13 @@ def gen_front_ts():
         reqtype=big_camel(api_name)+"Req"
         resptype=big_camel(api_name)+"Resp"
 
-        req_struct=""
-        fn_arg=""
-        fn_arg2=""
-        if api["req"]!=None:
-            req_struct=gen_struct_ts(reqtype,api["req"])
-            fn_arg=f"req:{reqtype}"
-            fn_arg2="req"
+        # req_struct=""
+        # fn_arg=""
+        # fn_arg2=""
+        # if api["req"]!=None:
+        req_struct=gen_struct_ts(reqtype,api["req"])
+        fn_arg=f"req:{reqtype}"
+        fn_arg2="req"
 
         resp_content=gen_dispatch_ts(resptype,api["resp_dispatch"])
         
@@ -252,20 +258,24 @@ use serde::{{Serialize, Deserialize}};
     apis+="".join(structs)
 
     handle_traits=[]
+    api_transforms=[]
     api_registers=[]
     for api_name, api in API_LIST.items():
+        if "transform" in BACKEND:
+            api_transforms.append(BACKEND["transform"].replace("{{}}",api_name))
         reqtype=big_camel(api_name)+"Req"
         resptype=big_camel(api_name)+"Resp"
 
-        req_struct=""
-        fn_req_arg=""
-        fn_req_arg2=""
-        trait_arg=""
-        if api["req"]!=None:
-            req_struct=gen_struct_rs(reqtype,api["req"])
-            fn_req_arg=f"Json(req):Json<{reqtype}>"
-            fn_req_arg2="req"
-            trait_arg=f"req:{reqtype}"
+        # req_struct=""
+
+        req_struct=gen_struct_rs(reqtype,api["req"])
+        # fn_req_arg=""
+        # fn_req_arg2=""
+        # trait_arg=""
+        # if api["req"]!=None:
+            # fn_req_arg=f"Json(req):Json<{reqtype}>"
+            # fn_req_arg2="req"
+        trait_arg=f"req:{reqtype}"
 
         resp_content=gen_dispatch_rs(resptype,api["resp_dispatch"])
 
@@ -273,13 +283,13 @@ use serde::{{Serialize, Deserialize}};
     {async_field} fn handle_{api_name}(&self, {trait_arg})->{resptype};
             """)
 
-        api_registers.append(f"""
-    {async_field} fn {api_name}({fn_req_arg})-> (StatusCode, Json<Value>){{
-        (StatusCode::OK, Json(ApiHandlerImpl.handle_{api_name}({fn_req_arg2}).await.serialize()))
-    }}
-    router=router
-        .route("/{api_name}", post({api_name}));
-                             """)
+    #     api_registers.append(f"""
+    # {async_field} fn {api_name}({fn_req_arg})-> (StatusCode, Json<Value>){{
+    #     (StatusCode::OK, Json(ApiHandlerImpl.handle_{api_name}({fn_req_arg2}).await.serialize()))
+    # }}
+    # router=router
+    #     .route("/{api_name}", post({api_name}));
+    #                          """)
 
     
         apis+=f"""
@@ -293,7 +303,7 @@ pub trait ApiHandler {{
     {"".join(handle_traits)}
 }}
 
-
+{"".join(api_transforms)}
 
 
 """
